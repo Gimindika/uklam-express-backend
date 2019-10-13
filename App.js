@@ -4,7 +4,6 @@ const helmet = require("helmet");
 const cors = require("cors");
 const logger = require("morgan");
 const router = require("./src/routes/root");
-// const db = require("./src/configs/db-config");
 
 const app = express();
 

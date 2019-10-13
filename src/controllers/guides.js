@@ -1,4 +1,4 @@
-const usersModel = require("../models/users");
+const guidesModel = require("../models/guides");
 const formResponse = require("../helpers/form-response");
 const cloudinary = require("../configs/cloudinaryConfig");
 const crypto = require("crypto-js");
@@ -8,12 +8,12 @@ const hash = string => {
   return crypto.SHA256(string).toString(crypto.enc.Hex);
 };
 
-const usersController = {
-  getUsers: (req, res) => {
+const guidesController = {
+  getGuides: (req, res) => {
     const email = req.query.email;
     if (email) {
-      usersModel
-        .getUser(email)
+      guidesModel
+        .getGuide(email)
         .then(result => {
           if (result.length) {
             formResponse.success(res, 200, result[0]);
@@ -28,8 +28,8 @@ const usersController = {
           res.json(error);
         });
     } else {
-      usersModel
-        .getAllUsers()
+      guidesModel
+        .getAllGuides()
         .then(result => {
           formResponse.success(res, 200, result);
         })
@@ -39,34 +39,7 @@ const usersController = {
     }
   },
   //////////////////////////////////////////////////////////////////
-  topUp: async (req, res) => {
-    const email = req.query.email;
-    const amount = req.body.amount;
 
-    const user = await usersModel
-      .getUser(email)
-      .then(result => {
-        return result[0];
-      })
-      .catch(error => {
-        res.json(error);
-      });
-
-    const balance = parseInt(user.balance) + parseInt(amount);
-
-    try {
-      usersModel.setBalance(email, balance);
-
-      const data = {
-        email,
-        balance
-      };
-      formResponse.success(res, 200, data);
-    } catch (error) {
-      res.json(error);
-    }
-  },
-  //////////////////////////////////////////////////////////////////
   editProfile: async (req, res) => {
     const email = req.query.email;
     const name = req.body.name;
@@ -75,8 +48,8 @@ const usersController = {
 
     let data = {};
 
-    const user = await usersModel
-      .getUser(email)
+    const guide = await guidesModel
+      .getGuide(email)
       .then(result => {
         return result[0];
       })
@@ -84,7 +57,7 @@ const usersController = {
         res.json(error);
       });
 
-    if (!user) {
+    if (!guide) {
       errorMessagee = {
         error: "User not found!"
       };
@@ -92,7 +65,7 @@ const usersController = {
     }
 
     data = {
-      ...user.profile
+      ...guide.profile
     };
 
     if (name) {
@@ -116,7 +89,7 @@ const usersController = {
       };
     }
 
-    usersModel
+    guidesModel
       .editProfile(email, data)
       .then(result => {
         data = {
@@ -134,6 +107,7 @@ const usersController = {
     const email = req.query.email;
     let photo = "";
 
+
     if (req.file) {
       photo = await cloudinary.uploader.upload(req.file.path, function(
         err,
@@ -146,7 +120,7 @@ const usersController = {
       email,
       photo: photo.url
     };
-    await usersModel
+    await guidesModel
       .editPhoto(email, photo.url)
       .then(result => {
         formResponse.success(res, 200, data);
@@ -161,8 +135,8 @@ const usersController = {
     const currentPassword = hash(req.body.currentPassword);
     const newPassword = hash(req.body.newPassword);
 
-    const user = await usersModel
-      .getUser(email)
+    const guide = await guidesModel
+      .getGuide(email)
       .then(result => {
         return result[0];
       })
@@ -170,20 +144,20 @@ const usersController = {
         res.json(error);
       });
 
-    if (!user) {
+    if (!guide) {
       errorMessagee = {
         error: "User not found!"
       };
       formResponse.success(res, 200, errorMessagee);
     }
 
-    if (user.password != currentPassword) {
+    if (guide.password != currentPassword) {
       const errorMessagee = {
         error: "Wrong Password!"
       };
       formResponse.success(res, 200, errorMessagee);
     } else {
-      usersModel
+      guidesModel
         .setPassword(email, newPassword)
         .then(result => {
           data = {
@@ -198,12 +172,11 @@ const usersController = {
   },
 
   //////////////////////////////////////////////////////////////////
-  deleteUser: async (req, res) => {
+  deleteGuide: async (req, res) => {
     const email = req.query.email;
 
-
-    usersModel
-      .deleteUser(email)
+    guidesModel
+      .deleteGuide(email)
       .then(result => {
         data = {
           email
@@ -213,7 +186,29 @@ const usersController = {
       .catch(error => {
         res.json(error);
       });
+  },
+  ///////////////////////////////////////////////////////////////////
+  setLocation: (req, res) => {
+      const email = req.query.email;
+        const location = {
+            longitude:req.body.longitude,
+            latitude:req.body.latitude
+        }
+
+      guidesModel.setLocation(email,location)
+      .then(result => {
+        data = {
+          email,
+          location:{
+              ...location
+          }
+        };
+        formResponse.success(res, 200, data);
+      })
+      .catch(error => {
+        res.json(error);
+      });
   }
 };
 
-module.exports = usersController;
+module.exports = guidesController;
