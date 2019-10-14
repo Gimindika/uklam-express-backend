@@ -49,8 +49,13 @@ const usersModel = {
     return new Promise((resolve, reject) => {
       result = conn()
         .collection("users")
-        .updateOne({ email: email }, { $set: { profile: data } });
-      resolve(result);
+        .updateOne({ email: email }, { $set: { profile: data } })
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(new Error(error));
+        });
     });
   },
 
@@ -58,8 +63,13 @@ const usersModel = {
     return new Promise((resolve, reject) => {
       result = conn()
         .collection("users")
-        .updateOne({ email: email }, { $set: { photo: photo } });
-      resolve(result);
+        .updateOne({ email: email }, { $set: { photo: photo } })
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(new Error(error));
+        });
     });
   },
 

@@ -101,6 +101,20 @@ const guidesModel = {
     });
   },
 
+  setRating: (email, rating) => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("guides")
+        .updateOne({ email: email }, { $set: { rating: rating } })
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(new Error(error));
+        });
+    });
+  },
+
   deleteGuide: email => {
     return new Promise((resolve, reject) => {
       result = conn()

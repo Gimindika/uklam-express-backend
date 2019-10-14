@@ -3,9 +3,9 @@ const router = express.Router();
 
 const users = require("./users");
 const guides = require("./guides");
+const packageItems = require("./packageItems");
 
 // const packagesRouter = require("./packages-routes");
-// const packageItemsRouter = require("./packageItems-routes");
 // const categoryRouter = require("./category-routes");
 // const transactionRouter = require("./transaction-routes");
 // const adminRouter = require("./admin-routes");
@@ -13,9 +13,9 @@ const guides = require("./guides");
 
 router.use("/user", users);
 router.use("/guide", guides);
+router.use("/packageitems", packageItems);
 
 // router.use("/packages", packagesRouter);
-// router.use("/packageitems", packageItemsRouter);
 // router.use("/category", categoryRouter);
 // router.use("/transaction", transactionRouter);
 // router.use("/admin", adminRouter);
