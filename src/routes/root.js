@@ -5,6 +5,7 @@ const users = require("./users");
 const guides = require("./guides");
 const packageItems = require("./packageItems");
 const packages = require('./packages');
+const auth = require('./auth');
 
 // const packagesRouter = require("./packages-routes");
 // const categoryRouter = require("./category-routes");
@@ -12,6 +13,7 @@ const packages = require('./packages');
 // const adminRouter = require("./admin-routes");
 // const reportRouter = require("./report-routes");
 
+router.use('/', auth);
 router.use("/user", users);
 router.use("/guide", guides);
 router.use("/packageitems", packageItems);

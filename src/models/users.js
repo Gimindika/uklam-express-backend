@@ -99,6 +99,16 @@ const usersModel = {
           reject(new Error(error));
         });
     });
+  },
+
+  register: data => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("users")
+        .insertOne(data);
+
+      resolve(result);
+    });
   }
 };
 

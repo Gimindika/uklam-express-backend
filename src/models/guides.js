@@ -127,6 +127,16 @@ const guidesModel = {
           reject(new Error(error));
         });
     });
+  },
+
+  register: data => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("guides")
+        .insertOne(data);
+
+      resolve(result);
+    });
   }
 };
 

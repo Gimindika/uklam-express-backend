@@ -3,7 +3,6 @@ const formResponse = require("../helpers/form-response");
 const cloudinary = require("../configs/cloudinaryConfig");
 const crypto = require("crypto-js");
 
-const secret = process.env.SECRET_KEY;
 const hash = string => {
   return crypto.SHA256(string).toString(crypto.enc.Hex);
 };
