@@ -42,9 +42,7 @@ const guidesController = {
 
   editProfile: async (req, res) => {
     const email = req.query.email;
-    const name = req.body.name;
-    const address = req.body.address;
-    const phone = req.body.phone;
+    const body = req.body;
 
     let data = {};
 
@@ -68,25 +66,14 @@ const guidesController = {
       ...guide.profile
     };
 
-    if (name) {
-      data = {
-        ...data,
-        name: name
-      };
-    }
-
-    if (address) {
-      data = {
-        ...data,
-        address: address
-      };
-    }
-
-    if (phone) {
-      data = {
-        ...data,
-        phone: phone
-      };
+    for (key in body) {
+      if (body.hasOwnProperty(key)) {
+        // console.log(key + " = " + body[key]);
+        data = {
+          ...data,
+          [key]: body[key]
+        };
+      }
     }
 
     guidesModel

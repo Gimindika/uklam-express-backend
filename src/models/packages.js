@@ -1,39 +1,39 @@
 const conn = require("../configs/db-config");
 
-const packageItemsModel = {
-  getAllPackageItems: () => {
+const packagesModel = {
+  getAllPackages: () => {
     return new Promise((resolve, reject) => {
       result = conn()
-        .collection("packageitems")
+        .collection("packages")
         .find()
         .toArray();
 
       resolve(result);
     });
   },
-  getPackageItem: id => {
+  getPackage: id => {
     return new Promise((resolve, reject) => {
       result = conn()
-        .collection("packageitems")
+        .collection("packages")
         .find({ _id:id})
         .toArray();
 
       resolve(result);
     });
   },
-  addPackageItem: data => {
+  addPackage: data => {
     return new Promise((resolve, reject) => {
       result = conn()
-        .collection("packageitems")
+        .collection("packages")
         .insertOne(data);
 
       resolve(result);
     });
   },
-  editPackageItem: (id, data) => {
+  editPackage: (id, data) => {
     return new Promise((resolve, reject) => {
       result = conn()
-        .collection("packageitems")
+        .collection("packages")
         .updateOne({ _id:id}, { $set: data });
 
       resolve(result);
@@ -42,7 +42,7 @@ const packageItemsModel = {
   editPhoto: (id, photo) => {
     return new Promise((resolve, reject) => {
       result = conn()
-        .collection("packageitems")
+        .collection("packages")
         .updateOne({ _id:id}, { $set: { photo: photo } })
         .then(result => {
           resolve(result);
@@ -52,10 +52,10 @@ const packageItemsModel = {
         });
     });
   },
-  deletePackageItem: id => {
+  deletePackage: id => {
     return new Promise((resolve, reject) => {
       result = conn()
-        .collection("packageitems")
+        .collection("packages")
         .findOneAndDelete({ _id:id});
 
       resolve(result);
@@ -63,4 +63,4 @@ const packageItemsModel = {
   }
 };
 
-module.exports = packageItemsModel;
+module.exports = packagesModel;

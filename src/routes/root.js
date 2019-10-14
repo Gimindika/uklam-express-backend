@@ -4,6 +4,7 @@ const router = express.Router();
 const users = require("./users");
 const guides = require("./guides");
 const packageItems = require("./packageItems");
+const packages = require('./packages');
 
 // const packagesRouter = require("./packages-routes");
 // const categoryRouter = require("./category-routes");
@@ -14,7 +15,7 @@ const packageItems = require("./packageItems");
 router.use("/user", users);
 router.use("/guide", guides);
 router.use("/packageitems", packageItems);
-
+router.use('/packages', packages);
 // router.use("/packages", packagesRouter);
 // router.use("/category", categoryRouter);
 // router.use("/transaction", transactionRouter);
