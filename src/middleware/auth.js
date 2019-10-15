@@ -13,10 +13,10 @@ const auth = {
             try{
                 const data = jwt.verify(token, secret);
                 if(data){
-                    req.id = data.id;
+                    // req.id = data.id;
                     req.email = data.email;
                     req.name = data.name;
-                    req.level = data.level;
+                    req.role = data.role;
                     next();
                 }
             } catch (err) {

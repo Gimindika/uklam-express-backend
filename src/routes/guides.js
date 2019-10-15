@@ -7,7 +7,9 @@ const multerUploads = require("../middleware/multer").multerUploads;
 
 router.get("/", guidesController.getGuides);
 router.get('/rating', ratingController.getRating);
+router.get('/order', orderController.getOrderListByGuide);
 router.post('/order', orderController.responseOrder);
+router.post('/order/finish', orderController.finishOrder);
 router.post('/rating', ratingController.addRating);
 router.put("/profile", guidesController.editProfile);
 router.put("/photo", multerUploads, guidesController.editPhoto);

@@ -44,6 +44,22 @@ const uklamBankModel = {
     });
   },
 
+  getOrderListByGuide: email => {
+    
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("orderlist")
+        .find({ "package.guide": email })
+        .toArray()
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(new Error(error));
+        });
+    });
+  },
+
   addOrderList: data => {
     return new Promise((resolve, reject) => {
       result = conn()
@@ -118,6 +134,30 @@ const uklamBankModel = {
         .catch(error => {
           reject(new Error(error));
         });
+    });
+  },
+  updateOrderRecord: (id, data) => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("transactions")
+        .updateOne({ _id: id }, { $set: data})
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(new Error(error));
+        });
+    });
+  },
+
+  getTransactionHistory: user => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("transactions")
+        .find({ user: user })
+        .toArray();
+
+      resolve(result);
     });
   },
 };

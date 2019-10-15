@@ -5,6 +5,7 @@ const orderController = require('../controllers/order');
 const multerUploads = require("../middleware/multer").multerUploads;
 
 router.get("/", usersController.getUsers);
+router.get('/history', orderController.getTransactionHistory);
 router.post("/topup", usersController.topUp);
 router.post('/order', orderController.createOrder);
 router.put("/profile", usersController.editProfile);
