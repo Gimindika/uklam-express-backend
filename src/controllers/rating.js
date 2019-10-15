@@ -8,7 +8,8 @@ const ratingController = {
     const data = {
       guide: req.query.email,
       user: req.body.user,
-      rating: req.body.rating
+      rating: req.body.rating,
+      testimony: req.body.testimony
     };
 
     await ratingModel
@@ -22,7 +23,7 @@ const ratingController = {
 
     let guideRatings = [];
     guideRatings = await ratingModel
-      .getRating(guide)
+      .getRatingNumber(guide)
       .then(result => {
         return result;
       })
@@ -40,7 +41,7 @@ const ratingController = {
       .setRating(guide, averageRating)
       .then(result => {
         result = {
-          guide,
+          data,
           rating: averageRating
         };
         formResponse.success(res, 200, result);
@@ -48,6 +49,17 @@ const ratingController = {
       .catch(error => {
         res.json(error);
       });
+  },
+
+  getRating: (req, res) => {
+    const guide = req.query.email;
+    ratingModel.getRating(guide)
+    .then(result => {
+      formResponse.success(res, 200, result)
+    })
+    .catch(error => {
+      res.json(error)
+    })
   }
 };
 

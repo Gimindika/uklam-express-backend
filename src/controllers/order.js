@@ -1,0 +1,266 @@
+const usersModel = require("../models/users");
+const packagesModel = require("../models/packages");
+const orderModel = require("../models/order");
+const guideModel = require("../models/guides");
+const formResponse = require("../helpers/form-response");
+let ObjectId = require("mongodb").ObjectID;
+
+const orderController = {
+  //////////////////////////////////////////////////////////////////
+  createOrder: async (req, res) => {
+    let packageID = req.body.package;
+    packageID = new ObjectId(packageID);
+    const orderDate = req.body.orderDate;
+    const status = "pending";
+
+    const user = await usersModel
+      .getUser(req.query.email)
+      .then(result => {
+        return result[0];
+      })
+      .catch(error => {
+        res.json(error);
+      });
+
+    const package = await packagesModel
+      .getPackage(packageID)
+      .then(result => {
+        return result[0];
+      })
+      .catch(error => {
+        res.json(error);
+      });
+
+    if (user.balance < package.price) {
+      formResponse.success(res, 200, { error: "Insufficient balance" });
+    } else {
+      const data = {
+        user: user.email,
+        package,
+        orderDate,
+        status
+      };
+
+      //payment dummy
+      //reduce user's balance
+      ///////////////////////////////////
+      usersModel
+        .setBalance(
+          user.email,
+          parseInt(user.balance) - parseInt(package.price)
+        )
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      //add Uklam's balance
+      const currentBalance = await orderModel
+        .getCurrentBalance()
+        .then(result => {
+          return result[0].balance;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      orderModel
+        .setUklamBalance(
+          new ObjectId("5da568ac122c541214ef32db"),
+          parseInt(currentBalance) + parseInt(package.price)
+        )
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+      ///////////////////////////////////
+
+      orderModel
+        .setUserCurrentOrder(user.email, data)
+        .then(result => {
+          //add order to guide orderlist
+          orderModel
+            .addOrderList(data)
+            .then(result => {
+              formResponse.success(res, 200, data);
+            })
+            .catch(error => {
+              res.json(error);
+            });
+          //////////////////////
+          //in guide
+          //if accepted
+          //set guide status
+          //set order status
+          //if rejected(or not accepted after some time, auto reject)
+          //set order status
+        })
+        .catch(error => {
+          res.json(error);
+        });
+    }
+  },
+
+  //////////////////////////////////////////////////////////////////
+  responseOrder: async (req, res) => {
+    const response = req.body.response;
+    const orderId = new ObjectId(req.body.order);
+    let order = await orderModel
+      .getOrder(orderId)
+      .then(result => {
+        return result[0];
+      })
+      .catch(error => {
+        res.json(error);
+      });
+
+      console.log(order);
+     
+    const guideEmail = order.package.guide;
+    const userEmail = order.user;
+
+    if (response == "accept") {
+      //order accepted
+      //set guide status
+      guideModel
+        .setStatus(guideEmail, "unavailable")
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+      //set order status(in order list and in users)
+      orderModel
+        .setOrderStatus(orderId, "ongoing")
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      orderModel
+        .setUserOrderStatus(userEmail, "ongoing")
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      //save record in transaction history
+      order = {
+        ...order,
+        status: "ongoing"
+      };
+      orderModel
+        .saveOrderRecord(order)
+        .then(result => {
+          formResponse.success(res, 200, order);
+        })
+        .catch(error => {
+          res.json(error);
+        });
+    } else {
+      //order rejected
+      const package = order.package;
+
+      //set order status(in order list and in users)
+      orderModel
+        .setOrderStatus(orderId, "rejected")
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      orderModel
+        .setUserOrderStatus(userEmail, "rejected")
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      //remove the order from guide's order list
+      orderModel
+        .deleteOrderList(orderId)
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      //save record in transaction history
+      order = {
+        ...order,
+        status: "rejected"
+      };
+      orderModel
+        .saveOrderRecord(order)
+        .then(result => {
+          formResponse.success(res, 200, order);
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      //refund to user
+      ///////////////////////////////////
+      const user = await usersModel
+        .getUser(order.user)
+        .then(result => {
+          return result[0];
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      //trf from Uklam's balance
+      const currentBalance = await orderModel
+        .getCurrentBalance()
+        .then(result => {
+          return result[0].balance;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      orderModel
+        .setUklamBalance(
+          new ObjectId("5da568ac122c541214ef32db"),
+          parseInt(currentBalance) - parseInt(package.price)
+        )
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      usersModel
+        .setBalance(
+          user.email,
+          parseInt(user.balance) + parseInt(package.price)
+        )
+        .then(result => {
+          return null;
+        })
+        .catch(error => {
+          res.json(error);
+        });
+
+      ///////////////////////////////////
+    }
+  }
+};
+
+module.exports = orderController;

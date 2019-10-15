@@ -134,7 +134,8 @@ const authController = {
                 longitude: 0,
                 latitude: 0
               },
-              rating: 0
+              rating: 0,
+              status: "unavailable"
             };
             guidesModel
               .register(body)
@@ -166,7 +167,8 @@ const authController = {
                 phone: "Phone"
               },
               photo: "https://image.flaticon.com/icons/png/512/44/44948.png",
-              balance: 0
+              balance: 0,
+              currentOrder:{}
             };
             usersModel
               .register(body)

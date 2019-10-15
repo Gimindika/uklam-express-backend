@@ -1,7 +1,7 @@
 const conn = require("../configs/db-config");
 
 const ratingModal = {
-  getRating: guide => {
+  getRatingNumber: guide => {
     return new Promise(async (resolve, reject) => {
       tmp = await conn()
         .collection("rating")
@@ -13,6 +13,21 @@ const ratingModal = {
         result.push(rating.rating);
       });
       resolve(result);
+    });
+  },
+
+  getRating: guide => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("rating")
+        .find({ guide })
+        .toArray()
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(new Error(error));
+        });
     });
   },
 

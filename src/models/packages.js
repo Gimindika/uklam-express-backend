@@ -15,7 +15,17 @@ const packagesModel = {
     return new Promise((resolve, reject) => {
       result = conn()
         .collection("packages")
-        .find({ _id:id})
+        .find({ _id: id })
+        .toArray();
+
+      resolve(result);
+    });
+  },
+  getPackageByType: type => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("packages")
+        .find({ type })
         .toArray();
 
       resolve(result);
@@ -34,7 +44,7 @@ const packagesModel = {
     return new Promise((resolve, reject) => {
       result = conn()
         .collection("packages")
-        .updateOne({ _id:id}, { $set: data });
+        .updateOne({ _id: id }, { $set: data });
 
       resolve(result);
     });
@@ -43,7 +53,7 @@ const packagesModel = {
     return new Promise((resolve, reject) => {
       result = conn()
         .collection("packages")
-        .updateOne({ _id:id}, { $set: { photo: photo } })
+        .updateOne({ _id: id }, { $set: { photo: photo } })
         .then(result => {
           resolve(result);
         })
@@ -56,7 +66,7 @@ const packagesModel = {
     return new Promise((resolve, reject) => {
       result = conn()
         .collection("packages")
-        .findOneAndDelete({ _id:id});
+        .findOneAndDelete({ _id: id });
 
       resolve(result);
     });

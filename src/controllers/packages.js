@@ -7,7 +7,25 @@ let ObjectId = require("mongodb").ObjectID;
 module.exports = {
   getPackages: (req, res) => {
     let id = req.query.id;
-    if (id) {
+    let type = req.query.type;
+
+    if (type) {
+      packagesModel
+        .getPackageByType(type)
+        .then(result => {
+          if (result.length) {
+            formResponse.success(res, 200, result);
+          } else {
+            const empty = {
+              empty: "No data."
+            };
+            formResponse.success(res, 200, empty);
+          }
+        })
+        .catch(error => {
+          res.json(error);
+        });
+    } else if (id) {
       id = new ObjectId(id);
 
       packagesModel

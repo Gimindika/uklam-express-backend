@@ -58,6 +58,19 @@ const guidesModel = {
         });
     });
   },
+  setStatus: (email, status) => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("guides")
+        .updateOne({ email: email }, { $set: { status: status } })
+        .then(result => {
+          resolve(result);
+        })
+        .catch(error => {
+          reject(new Error(error));
+        });
+    });
+  },
 
   editProfile: (email, data) => {
     return new Promise((resolve, reject) => {

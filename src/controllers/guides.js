@@ -194,7 +194,25 @@ const guidesController = {
       .catch(error => {
         res.json(error);
       });
-  }
+  },
+  //////////////////////////////////////////////////////////////////
+  setStatus: (req, res) => {
+    const email = req.query.email;
+    const status = req.body.status;
+
+    guidesModel
+      .setStatus(email, status)
+      .then(result => {
+        data = {
+          email,
+          status
+        };
+        formResponse.success(res, 200, data);
+      })
+      .catch(error => {
+        res.json(error);
+      });
+  },
 };
 
 module.exports = guidesController;
