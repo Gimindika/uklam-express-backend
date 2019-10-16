@@ -3,6 +3,7 @@ const packagesModel = require("../models/packages");
 const orderModel = require("../models/order");
 const guideModel = require("../models/guides");
 const formResponse = require("../helpers/form-response");
+const firebase = require("firebase");
 let ObjectId = require("mongodb").ObjectID;
 
 const orderController = {
@@ -84,21 +85,25 @@ const orderController = {
         .setUserCurrentOrder(user.email, data)
         .then(result => {
           //add order to guide orderlist
+          ///////////////////////////////////////////
           orderModel
             .addOrderList(data)
             .then(result => {
+              const firebaseData = {
+                ...data,
+                _id: data._id.toString()
+              };
+
+              firebase
+                .database()
+                .ref("order/" + data._id.toString())
+                .set(firebaseData);
+              //////////////////////////////////////////////
               formResponse.success(res, 200, data);
             })
             .catch(error => {
               res.json(error);
             });
-          //////////////////////
-          //in guide
-          //if accepted
-          //set guide status
-          //set order status
-          //if rejected(or not accepted after some time, auto reject)
-          //set order status
         })
         .catch(error => {
           res.json(error);
@@ -160,6 +165,17 @@ const orderController = {
       orderModel
         .saveOrderRecord(order)
         .then(result => {
+          /////////////////////////////////////////////
+          const firebaseData = {
+            ...order,
+            _id: order._id.toString()
+          };
+
+          firebase
+            .database()
+            .ref("order/" + order._id.toString())
+            .set(firebaseData);
+          /////////////////////////////////////////////
           formResponse.success(res, 200, order);
         })
         .catch(error => {
@@ -206,6 +222,17 @@ const orderController = {
       orderModel
         .saveOrderRecord(order)
         .then(result => {
+          /////////////////////////////////////////////
+          const firebaseData = {
+            ...order,
+            _id: order._id.toString()
+          };
+
+          firebase
+            .database()
+            .ref("order/" + order._id.toString())
+            .set(firebaseData);
+          /////////////////////////////////////////////
           formResponse.success(res, 200, order);
         })
         .catch(error => {
@@ -393,6 +420,17 @@ const orderController = {
     orderModel
       .updateOrderRecord(orderId, order)
       .then(result => {
+        /////////////////////////////////////////////
+        const firebaseData = {
+          ...order,
+          _id: order._id.toString()
+        };
+
+        firebase
+          .database()
+          .ref("order/" + order._id.toString())
+          .set(firebaseData);
+        /////////////////////////////////////////////
         formResponse.success(res, 200, order);
       })
       .catch(error => {

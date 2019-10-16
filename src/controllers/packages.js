@@ -59,32 +59,52 @@ module.exports = {
     const guide = req.body.guide;
     const name = req.body.name;
     const description = req.body.description;
-    let packageItems = req.body.packageItems;
-    // const price = req.body.price;
+    const type = req.body.type;
     const photo =
       "https://images.unsplash.com/photo-1500322969630-a26ab6eb64cc?ixlib=rb-1.2.1&w=1000&q=80";
 
-    let price = 0;
-    const items = [];
-    for (let i = 0; i < packageItems.length; i++) {
-      let tmp = await packageItemsModel
-        .getPackageItem(new ObjectId(packageItems[i]))
-        .then(result => {
-          return result[0];
-        });
-      price += tmp.price;
-      items.push(tmp);
-    }
-    packageItems = [...items];
+    let data;
 
-    let data = {
-      name,
-      photo,
-      description,
-      packageItems,
-      price,
-      guide
-    };
+    let price = 0;
+    if (req.body.price) {
+      price = req.body.price;
+    } else {
+      price = 0;
+    }
+
+    if (req.body.packageItems) {
+      let packageItems = req.body.packageItems;
+      const items = [];
+      for (let i = 0; i < packageItems.length; i++) {
+        let tmp = await packageItemsModel
+          .getPackageItem(new ObjectId(packageItems[i]))
+          .then(result => {
+            return result[0];
+          });
+        price += tmp.price;
+        items.push(tmp);
+      }
+      packageItems = [...items];
+
+      data = {
+        name,
+        photo,
+        description,
+        packageItems,
+        price,
+        guide,
+        type
+      };
+    } else {
+      data = {
+        name,
+        photo,
+        description,
+        price,
+        guide,
+        type
+      };
+    }
 
     packagesModel
       .addPackage(data)
@@ -157,25 +177,28 @@ module.exports = {
         };
       }
     }
+    console.log(req.body.packageItems);
+    
+    if (req.body.packageItems) {
+      let price = 0;
+      const items = [];
+      for (let i = 0; i < data.packageItems.length; i++) {
+        let tmp = await packageItemsModel
+          .getPackageItem(new ObjectId(data.packageItems[i]))
+          .then(result => {
+            return result[0];
+          });
+        price += tmp.price;
+        items.push(tmp);
+      }
+      const packageItems = [...items];
 
-    let price = 0;
-    const items = [];
-    for (let i = 0; i < data.packageItems.length; i++) {
-      let tmp = await packageItemsModel
-        .getPackageItem(new ObjectId(data.packageItems[i]))
-        .then(result => {
-          return result[0];
-        });
-      price += tmp.price;
-      items.push(tmp);
+      data = {
+        ...data,
+        price,
+        packageItems
+      };
     }
-    const packageItems = [...items];
-
-    data = {
-      ...data,
-      price,
-      packageItems
-    };
 
     packagesModel
       .editPackage(id, data)
