@@ -10,7 +10,7 @@ module.exports = {
     let type = req.query.type;
     let guide = req.query.guide;
 
-    if(guide){
+    if (guide) {
       packagesModel
         .getPackageByGuide(guide)
         .then(result => {
@@ -77,8 +77,14 @@ module.exports = {
     const name = req.body.name;
     const description = req.body.description;
     const type = req.body.type;
-    const photo =
-      "https://images.unsplash.com/photo-1500322969630-a26ab6eb64cc?ixlib=rb-1.2.1&w=1000&q=80";
+
+    let photo;
+    if (req.body.photo) {
+      photo = req.body.photo;
+    } else {
+      photo =
+        "https://images.unsplash.com/photo-1500322969630-a26ab6eb64cc?ixlib=rb-1.2.1&w=1000&q=80";
+    }
 
     let data;
 
@@ -195,7 +201,7 @@ module.exports = {
       }
     }
     console.log(req.body.packageItems);
-    
+
     if (req.body.packageItems) {
       let price = 0;
       const items = [];
