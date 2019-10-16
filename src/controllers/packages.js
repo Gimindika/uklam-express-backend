@@ -8,8 +8,25 @@ module.exports = {
   getPackages: (req, res) => {
     let id = req.query.id;
     let type = req.query.type;
+    let guide = req.query.guide;
 
-    if (type) {
+    if(guide){
+      packagesModel
+        .getPackageByGuide(guide)
+        .then(result => {
+          if (result.length) {
+            formResponse.success(res, 200, result);
+          } else {
+            const empty = {
+              empty: "No data."
+            };
+            formResponse.success(res, 200, empty);
+          }
+        })
+        .catch(error => {
+          res.json(error);
+        });
+    } else if (type) {
       packagesModel
         .getPackageByType(type)
         .then(result => {

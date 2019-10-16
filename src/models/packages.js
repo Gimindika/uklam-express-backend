@@ -21,6 +21,16 @@ const packagesModel = {
       resolve(result);
     });
   },
+  getPackageByGuide: guide => {
+    return new Promise((resolve, reject) => {
+      result = conn()
+        .collection("packages")
+        .find({ guide })
+        .toArray();
+
+      resolve(result);
+    });
+  },
   getPackageByType: type => {
     return new Promise((resolve, reject) => {
       result = conn()
