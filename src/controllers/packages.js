@@ -87,8 +87,10 @@ module.exports = {
       .catch(error => {
         res.json(error);
       });
-      const guideId = guideObj._id.toString();
-   
+    if (!guideObj) {
+      formResponse.success(res, 400, { error: "Guide not found" });
+    }
+    const guideId = guideObj._id.toString();
 
     let photo;
     if (req.body.photo) {
