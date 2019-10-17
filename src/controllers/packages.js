@@ -1,5 +1,6 @@
 const packagesModel = require("../models/packages");
 const packageItemsModel = require("../models/packageItems");
+const guideModel = require("../models/guides");
 const formResponse = require("../helpers/form-response");
 const cloudinary = require("../configs/cloudinaryConfig");
 let ObjectId = require("mongodb").ObjectID;
@@ -78,6 +79,17 @@ module.exports = {
     const description = req.body.description;
     const type = req.body.type;
 
+    const guideObj = await guideModel
+      .getGuide(guide)
+      .then(result => {
+        return result[0];
+      })
+      .catch(error => {
+        res.json(error);
+      });
+      const guideId = guideObj._id.toString();
+   
+
     let photo;
     if (req.body.photo) {
       photo = req.body.photo;
@@ -116,6 +128,7 @@ module.exports = {
         packageItems,
         price,
         guide,
+        guideId,
         type
       };
     } else {
@@ -125,6 +138,7 @@ module.exports = {
         description,
         price,
         guide,
+        guideId,
         type
       };
     }
